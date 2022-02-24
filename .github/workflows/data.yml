@@ -27,8 +27,10 @@ jobs:
       - name: Install apt dependencies
         run: sudo apt-get install --yes postgresql-client curl
       - name: Install pip packages
-        run: pip install followthemoney-store psycopg2
+        run: pip install followthemoney-store psycopg2 pandas
       - name: Download and import latest data
         run: curl -s https://data.opensanctions.org/datasets/latest/all/entities.ftm.json | ftm store write -d opensanctions
         env:
           FTM_STORE_URI: postgresql://ftm:ftm@localhost/ftm
+      - name: wrangle data
+        run: python3 ./build_data.py
