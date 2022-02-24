@@ -34,6 +34,7 @@ AUTHORITIES = {
     "Entity List (EL) - Bureau of Industry and Security": "us",
     "European External Action Service": "eu",
     "UK; Office of Financial Sanctions Implementation": "uk",
+    "Office of Financial Sanctions Implementation; UK": "uk",  # FIXME
     "Military End User (MEU) List - Bureau of Industry and Security": "us",
     "Ministry of Finance": "jp",
     "Державна служба фінансового моніторингу України (Держфінмоніторинг)": "ua",  # noqa
