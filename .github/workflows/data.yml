@@ -25,9 +25,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v1
       - name: Install apt dependencies
-        run: |
-          apt-get update
-          apt-get install --yes postgresql-client curl
+        run: sudo apt-get install --yes postgresql-client curl
       - name: Install followthemoney
         run: pip install followthemoney-store
       - name: Download and import latest data
