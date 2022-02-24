@@ -31,4 +31,4 @@ jobs:
       - name: Download and import latest data
         run: curl -s https://data.opensanctions.org/datasets/latest/all/entities.ftm.json | ftm store write -d opensanctions
         env:
-          FTM_STORE_URI: postgresql://ftm:ftm@postgres/ftm
+          FTM_STORE_URI: postgresql://ftm:ftm@localhost/ftm
