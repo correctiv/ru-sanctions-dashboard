@@ -1,0 +1,36 @@
+name: build data
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-data:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_DB: ftm
+          POSTGRES_PASSWORD: ftm
+          POSTGRES_USER: ftm
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v1
+      - name: Install apt dependencies
+        run: |
+          apt-get update
+          apt-get install --yes postgresql-client curl
+      - name: Install followthemoney
+        run: pip install followthemoney-store
+      - name: Download and import latest data
+        run: curl -s https://data.opensanctions.org/datasets/latest/all/entities.ftm.json | ftm store write -d opensanctions
+        env:
+          FTM_STORE_URI: postgresql://ftm:ftm@postgres/ftm
