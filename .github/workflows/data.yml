@@ -6,6 +6,7 @@ on:
 jobs:
   build-data:
     runs-on: ubuntu-latest
+
     services:
       postgres:
         image: postgres:latest
@@ -21,6 +22,9 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 
+    env:
+      FTM_STORE_URI: postgresql://ftm:ftm@localhost/ftm
+
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v1
@@ -30,7 +34,5 @@ jobs:
         run: pip install followthemoney-store psycopg2 pandas
       - name: Download and import latest data
         run: curl -s https://data.opensanctions.org/datasets/latest/all/entities.ftm.json | ftm store write -d opensanctions
-        env:
-          FTM_STORE_URI: postgresql://ftm:ftm@localhost/ftm
       - name: wrangle data
         run: python3 ./build_data.py
