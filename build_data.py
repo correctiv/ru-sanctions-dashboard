@@ -34,7 +34,6 @@ AUTHORITIES = {
     "Entity List (EL) - Bureau of Industry and Security": "us",
     "European External Action Service": "eu",
     "UK; Office of Financial Sanctions Implementation": "uk",
-    "Office of Financial Sanctions Implementation; UK": "uk",  # FIXME
     "Military End User (MEU) List - Bureau of Industry and Security": "us",
     "Ministry of Finance": "jp",
     "Державна служба фінансового моніторингу України (Держфінмоніторинг)": "ua",  # noqa
@@ -47,7 +46,7 @@ AUTHORITIES = {
     "Asian Development Bank": "as",
     "African Development Bank Group": "af",
     "WBG cross debarment; Inter-American Development Bank": "sa",
-    "National Bureau for Counter Terror Financing; The State Security Cabinet (SSC)": "il",  # noqa
+    "The State Security Cabinet (SSC); National Bureau for Counter Terror Financing": "il",  # noqa
 }
 
 COUNTRIES = {
@@ -119,7 +118,7 @@ def clean_table(df):
     def unpack(value):
         if value is None:
             return
-        return "; ".join(value)
+        return "; ".join(sorted(value, key=lambda x: len(x)))
 
     def clean_date(value):
         if value is None:
