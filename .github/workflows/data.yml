@@ -46,5 +46,5 @@ jobs:
           push-branch: 'main'
           commit-message: ':robot: automatic data build'
           rebase: true
-          name: 'data bot'
+          name: 'github action'
           files: src/data/
