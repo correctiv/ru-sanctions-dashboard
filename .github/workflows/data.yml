@@ -26,8 +26,8 @@ jobs:
       - uses: actions/setup-python@v1
       - name: Install apt dependencies
         run: sudo apt-get install --yes postgresql-client curl
-      - name: Install followthemoney
-        run: pip install followthemoney-store
+      - name: Install pip packages
+        run: pip install followthemoney-store psycopg2
       - name: Download and import latest data
         run: curl -s https://data.opensanctions.org/datasets/latest/all/entities.ftm.json | ftm store write -d opensanctions
         env:
