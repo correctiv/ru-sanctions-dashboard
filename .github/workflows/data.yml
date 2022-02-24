@@ -2,6 +2,9 @@ name: build data
 
 on:
   workflow_dispatch:
+  schedule:
+    # https://github.com/opensanctions/opensanctions/blob/main/.github/workflows/production.yml#L5
+    - cron: "0 */6 * * *"
 
 jobs:
   build-data:
@@ -41,7 +44,7 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           push-branch: 'main'
-          commit-message: 'automatic data update'
+          commit-message: ':robot: automatic data build'
           rebase: true
           name: 'data bot'
           files: src/data/
