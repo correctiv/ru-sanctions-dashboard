@@ -36,3 +36,12 @@ jobs:
         run: curl -s https://data.opensanctions.org/datasets/latest/all/entities.ftm.json | ftm store write -d opensanctions
       - name: wrangle data
         run: python3 ./build_data.py
+      - name: Commit and push
+        uses: github-actions-x/commit@v2.8
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          push-branch: 'main'
+          commit-message: 'automatic data update'
+          rebase: true
+          name: 'data bot'
+          files: src/data/
