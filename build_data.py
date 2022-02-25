@@ -177,22 +177,22 @@ if __name__ == "__main__":
     df = df[df["active"]]
     log.info(f"Active entries: `{len(df)}`")
 
-    # filter for russia and >= 2013
+    # filter for russia and >= 2014
     df = df[df["countries"].fillna("").map(lambda x: "ru" in x)]
-    df = df[df["start"] > "2013"]
-    log.info(f"Entries against russian targets since 2013: `{len(df)}`")
+    df = df[df["start"] > "2014"]
+    log.info(f"Entries against russian targets since 2014: `{len(df)}`")
 
     df.index = pd.DatetimeIndex(df["start"])
 
     # generate table csv
     df_table = clean_table(df)
     df_table.fillna("").to_csv(
-        "./src/data/sanctions_2013-2022.csv", index=False
+        "./src/data/sanctions_2014-2022.csv", index=False
     )  # noqa
 
     # generate timeline csv
     pd.DataFrame(df.resample("1M")["sanction_id"].count()).to_csv(
-        "./src/data/sanctions_timeline_2013-2022.csv"
+        "./src/data/sanctions_timeline_2014-2022.csv"
     )
 
     # generate recent aggregations
