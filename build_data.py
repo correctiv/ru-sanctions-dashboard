@@ -1,13 +1,13 @@
 # flake8: noqa
 
 
+import json
 import logging
 import os
 import sys
 from datetime import datetime
 
 import pandas as pd
-
 
 # setup logger
 root = logging.getLogger()
@@ -212,3 +212,32 @@ if __name__ == "__main__":
     )
     df_recent_origin = df_recent_origin.pivot("start", "origin", "sanction_id")
     df_recent_origin.fillna(0).to_csv("./src/data/recent_origin_aggregation.csv")
+
+    # meta data to inject into page via js
+    df["old"] = (df["start"] < "2022-02-22").map(int)
+    df["new"] = (df["start"] > "2022-02-21").map(int)
+
+    old_sanctions = df["old"].sum()
+    old_entities = len(df[df["old"].map(bool)]["entity_id"].unique())
+    new_sanctions = df["new"].sum()
+    new_entities = len(df[df["new"].map(bool)]["entity_id"].unique())
+
+    df_meta = pd.DataFrame(
+        ((old_sanctions, new_sanctions), (old_entities, new_entities)),
+        columns=("old", "new"),
+        index=("sanctions", "entities"),
+    )
+
+    df_meta = pd.concat(
+        (
+            df_meta,
+            df.groupby("origin")["old", "new"].sum(),
+            df.groupby("schema")["old", "new"].sum(),
+        )
+    )
+
+    meta = df_meta.to_dict()
+    meta["last_updated"] = NOW.isoformat()
+
+    with open("./src/data/meta.json", "w") as f:
+        json.dump(meta, f)
