@@ -1,3 +1,6 @@
+# flake8: noqa
+
+
 import logging
 import os
 import sys
@@ -72,6 +75,7 @@ def load_data():
             s.entity ->> 'caption' as caption,
             s.entity -> 'properties' -> 'program' as program,
             s.entity -> 'properties' -> 'reason' as reason,
+            s.entity -> 'properties' -> 'country' as origin,
             s.entity -> 'properties' -> 'authority' as authority,
             s.entity -> 'properties' -> 'sourceUrl' as sourceUrl,
             s.entity -> 'properties' -> 'startDate' as startDate,
@@ -110,6 +114,7 @@ def clean_data(df):
     df["start"] = pd.to_datetime(df.apply(get_start, axis=1), errors="coerce")
     df["end"] = pd.to_datetime(df.apply(get_end, axis=1), errors="coerce")
     df["active"] = df.apply(get_active, axis=1)
+    df["origin"] = df["origin"].map(lambda x: x[0] if x else x)
 
     return df
 
@@ -153,12 +158,9 @@ def clean_table(df):
     df_table["start"] = df_table["start"].map(clean_date)
     df_table["end"] = df_table["end"].map(clean_date)
     df_table["icon"] = df_table["schema"].map(lambda x: ICONS.get(x))
-    df_table["origin"] = df_table["authority"].map(lambda x: AUTHORITIES[x])
     df_table["authority"] = df_table["authority"].map(clean_authority)
 
-    df_table = df_table[
-        ["name", "icon", "start", "end", "origin", "authority", "sourceurl"]
-    ]
+    df_table = df_table[["name", "icon", "start", "end", "authority", "sourceurl"]]
 
     df_table = df_table.drop_duplicates()
     return df_table
@@ -188,12 +190,25 @@ if __name__ == "__main__":
         "./src/data/sanctions_2013-2022.csv", index=False
     )  # noqa
 
-    # generate recent table csv
-    df_recent = df_table[df_table["start"].map(str) > "2022-02-21"]
-    log.info(f"Entries since 2022-02-22: `{len(df_recent)}`")
-    df_recent.fillna("").to_csv("./src/data/sanctions_recent.csv", index=False)
-
     # generate timeline csv
     pd.DataFrame(df.resample("1M")["sanction_id"].count()).to_csv(
         "./src/data/sanctions_timeline_2013-2022.csv"
     )
+
+    # generate recent aggregations
+    df_recent = df[df["start"] > "2022-02-21"]
+    log.info(f"Entries since 2022-02-22: `{len(df_recent)}`")
+
+    # per schema
+    df_recent_schema = (
+        df_recent.groupby("schema").resample("1D")["sanction_id"].count().reset_index()
+    )
+    df_recent_schema = df_recent_schema.pivot("start", "schema", "sanction_id")
+    df_recent_schema.fillna(0).to_csv("./src/data/recent_schema_aggregation.csv")
+
+    # per origin
+    df_recent_origin = (
+        df_recent.groupby("origin").resample("1D")["sanction_id"].count().reset_index()
+    )
+    df_recent_origin = df_recent_origin.pivot("start", "origin", "sanction_id")
+    df_recent_origin.fillna(0).to_csv("./src/data/recent_origin_aggregation.csv")
