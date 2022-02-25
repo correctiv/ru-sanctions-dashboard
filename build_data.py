@@ -188,6 +188,11 @@ if __name__ == "__main__":
         "./src/data/sanctions_2013-2022.csv", index=False
     )  # noqa
 
+    # generate recent table csv
+    df_recent = df_table[df_table["start"].map(str) > "2022-02-21"]
+    log.info(f"Entries since 2022-02-22: `{len(df_recent)}`")
+    df_recent.fillna("").to_csv("./src/data/sanctions_recent.csv", index=False)
+
     # generate timeline csv
     pd.DataFrame(df.resample("1M")["sanction_id"].count()).to_csv(
         "./src/data/sanctions_timeline_2013-2022.csv"
