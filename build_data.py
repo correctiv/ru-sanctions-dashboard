@@ -182,45 +182,48 @@ if __name__ == "__main__":
     df_recent = df[df["start"] > "2022-02-21"]
     log.info(f"Entries since 2022-02-22: `{len(df_recent)}`")
 
-    # per schema
-    SCHEMA_DE = {
-        "Person": "Person",
-        "Company": "Firma",
-    }
-    SCHEMA_EN = {
-        "Person": "Person",
-        "Company": "Company",
-    }
-    df_recent["schema_de"] = df_recent["schema"].map(
-        lambda x: SCHEMA_DE.get(x, "Sonstige")
-    )
-    df_recent["schema_en"] = df_recent["schema"].map(
-        lambda x: SCHEMA_EN.get(x, "Other")
+    # per schema - table with 1st row as icon header
+    df_recent_schema = df_recent.copy()
+    df_recent_schema["schema"] = df_recent_schema["schema"].map(
+        lambda x: x if x in ICONS else "Other"
     )
     df_recent_schema = (
-        df_recent.groupby("schema_de")
+        df_recent_schema.groupby("schema")
         .resample("1D")["sanction_id"]
         .count()
         .reset_index()
     )
-    df_recent_schema = df_recent_schema.pivot("start", "schema_de", "sanction_id")
-    df_recent_schema.fillna(0).to_csv("./src/data/recent_schema_aggregation.csv")
-    df_recent_schema_en = (
-        df_recent.groupby("schema_en")
-        .resample("1D")["sanction_id"]
-        .count()
-        .reset_index()
+    df_recent_schema["sanction_id"] = df_recent_schema["sanction_id"].map(
+        lambda x: "" if pd.isna(x) else str(int(x))
     )
-    df_recent_schema_en = df_recent_schema_en.pivot("start", "schema_en", "sanction_id")
-    df_recent_schema_en.fillna(0).to_csv("./src/data/recent_schema_aggregation_en.csv")
+    df_recent_schema = df_recent_schema.pivot("start", "schema", "sanction_id")
+    df_recent_schema = df_recent_schema.sort_values("start")
+    df_recent_schema.index = df_recent_schema.index.map(lambda x: x.date())
+    df_recent_schema.loc[""] = df_recent_schema.columns.map(
+        lambda x: ICONS.get(x, ICONS["Other"])
+    )
+    df_recent_schema.iloc[::-1].fillna("").to_csv(
+        "./src/data/recent_schema_aggregation_table.csv"
+    )
 
-    # per origin
+    # per origin - table with 1st row as flag icon header
+    def get_icon(origin):
+        if origin in ("eu", "uno"):
+            return f"![{origin}]({BASE_URL}/img/{origin}.svg)"
+        return f":{origin}:"
+
     df_recent_origin = (
         df_recent.groupby("origin").resample("1D")["sanction_id"].count().reset_index()
     )
-    df_recent_origin["origin"] = df_recent_origin["origin"].str.upper()
+    df_recent_origin["sanction_id"] = df_recent_origin["sanction_id"].map(
+        lambda x: "" if pd.isna(x) else str(int(x))
+    )
     df_recent_origin = df_recent_origin.pivot("start", "origin", "sanction_id")
-    df_recent_origin.fillna(0).to_csv("./src/data/recent_origin_aggregation.csv")
+    df_recent_origin.index = df_recent_origin.index.map(lambda x: x.date()).map(str)
+    df_recent_origin.loc[""] = df_recent_origin.columns.map(get_icon)
+    df_recent_origin.iloc[::-1].fillna("").to_csv(
+        "./src/data/recent_origin_aggregation_table.csv"
+    )
 
     # meta data to inject into page via js
     df["old"] = (df["start"] < "2022-02-22").map(int)
