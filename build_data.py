@@ -127,7 +127,7 @@ def clean_table(df):
     def markdown_url(value):
         if value is None:
             return
-        return f"[Quelle]({value})"
+        return f"[URL]({value})"
 
     df_table = df.copy()
     df_table["program"] = df_table["program"].map(unpack)
