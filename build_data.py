@@ -60,6 +60,7 @@ COUNTRIES = {
     "jp": "Japan",
     "ar": "Argentinien",
     "il": "Israel",
+    "ch": "Schweiz",
 }
 
 
@@ -200,39 +201,71 @@ if __name__ == "__main__":
     log.info(f"Entries since 2022-02-22: `{len(df_recent)}`")
 
     # per schema
-    df_recent_schema = (
-        df_recent.groupby("schema").resample("1D")["sanction_id"].count().reset_index()
+    SCHEMA_DE = {
+        "Person": "Person",
+        "Company": "Firma",
+    }
+    SCHEMA_EN = {
+        "Person": "Person",
+        "Company": "Company",
+    }
+    df_recent["schema_de"] = df_recent["schema"].map(
+        lambda x: SCHEMA_DE.get(x, "Sonstige")
     )
-    df_recent_schema = df_recent_schema.pivot("start", "schema", "sanction_id")
+    df_recent["schema_en"] = df_recent["schema"].map(
+        lambda x: SCHEMA_EN.get(x, "Other")
+    )
+    df_recent_schema = (
+        df_recent.groupby("schema_de")
+        .resample("1D")["sanction_id"]
+        .count()
+        .reset_index()
+    )
+    df_recent_schema = df_recent_schema.pivot("start", "schema_de", "sanction_id")
     df_recent_schema.fillna(0).to_csv("./src/data/recent_schema_aggregation.csv")
+    df_recent_schema_en = (
+        df_recent.groupby("schema_en")
+        .resample("1D")["sanction_id"]
+        .count()
+        .reset_index()
+    )
+    df_recent_schema_en = df_recent_schema_en.pivot("start", "schema_en", "sanction_id")
+    df_recent_schema_en.fillna(0).to_csv("./src/data/recent_schema_aggregation_en.csv")
 
     # per origin
     df_recent_origin = (
         df_recent.groupby("origin").resample("1D")["sanction_id"].count().reset_index()
     )
+    df_recent_origin["origin"] = df_recent_origin["origin"].str.upper()
     df_recent_origin = df_recent_origin.pivot("start", "origin", "sanction_id")
     df_recent_origin.fillna(0).to_csv("./src/data/recent_origin_aggregation.csv")
 
     # meta data to inject into page via js
     df["old"] = (df["start"] < "2022-02-22").map(int)
     df["new"] = (df["start"] > "2022-02-21").map(int)
+    df["all"] = 1
 
     old_sanctions = df["old"].sum()
     old_entities = len(df[df["old"].map(bool)]["entity_id"].unique())
     new_sanctions = df["new"].sum()
     new_entities = len(df[df["new"].map(bool)]["entity_id"].unique())
+    all_sanctions = len(df)
+    all_entities = len(df["entity_id"].unique())
 
     df_meta = pd.DataFrame(
-        ((old_sanctions, new_sanctions), (old_entities, new_entities)),
-        columns=("old", "new"),
+        (
+            (old_sanctions, new_sanctions, all_sanctions),
+            (old_entities, new_entities, all_entities),
+        ),
+        columns=("old", "new", "all"),
         index=("sanctions", "entities"),
     )
 
     df_meta = pd.concat(
         (
             df_meta,
-            df.groupby("origin")["old", "new"].sum(),
-            df.groupby("schema")["old", "new"].sum(),
+            df.groupby("origin")[["old", "new", "all"]].sum(),
+            df.groupby("schema")[["old", "new", "all"]].sum(),
         )
     )
 
