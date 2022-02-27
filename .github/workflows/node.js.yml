@@ -35,7 +35,7 @@ jobs:
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         push-branch: 'main'
-        commit-message: ':robot: automatic data build'
+        commit-message: ':rocket: automatic node build'
         rebase: true
         force-add: true
         name: 'github action'
