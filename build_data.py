@@ -37,9 +37,9 @@ ICONS = {
 
 AUTHORITIES = {
     "European External Action Service": "eu",
-    "United Nations Security Council (UN SC)": "un",
-    "UN; Office of Financial Sanctions Implementation": "un",
-    "World Bank": "un",
+    "United Nations Security Council (UN SC)": "uno",
+    "UN; Office of Financial Sanctions Implementation": "uno",
+    "World Bank": "uno",
 }
 
 
@@ -118,7 +118,7 @@ def clean_table(df):
         if origin is not None:
             return f":{origin}: {origin.upper()} | {value}"
         origin = AUTHORITIES.get(value)
-        if origin in ("eu", "un"):
+        if origin in ("eu", "uno"):
             return (
                 f"![{origin}]({BASE_URL}/img/{origin}.svg) {origin.upper()} | {value}"
             )
