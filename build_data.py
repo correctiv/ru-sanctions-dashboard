@@ -194,7 +194,7 @@ if __name__ == "__main__":
         .reset_index()
     )
     df_recent_schema["sanction_id"] = df_recent_schema["sanction_id"].map(
-        lambda x: "" if pd.isna(x) else str(int(x))
+        lambda x: "" if pd.isna(x) or x < 1 else str(int(x))
     )
     df_recent_schema = df_recent_schema.pivot("start", "schema", "sanction_id")
     df_recent_schema = df_recent_schema.sort_values("start")
@@ -216,7 +216,7 @@ if __name__ == "__main__":
         df_recent.groupby("origin").resample("1D")["sanction_id"].count().reset_index()
     )
     df_recent_origin["sanction_id"] = df_recent_origin["sanction_id"].map(
-        lambda x: "" if pd.isna(x) else str(int(x))
+        lambda x: "" if pd.isna(x) or x < 1 else str(int(x))
     )
     df_recent_origin = df_recent_origin.pivot("start", "origin", "sanction_id")
     df_recent_origin.index = df_recent_origin.index.map(lambda x: x.date()).map(str)
