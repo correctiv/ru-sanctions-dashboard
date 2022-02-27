@@ -25,42 +25,21 @@ log = logging.getLogger(__name__)
 NOW = datetime.now()
 DATABASE_URI = os.getenv("FTM_STORE_URI")
 
+BASE_URL = "https://correctiv.github.io/ru-sanctions-dashboard/public"
+
 ICONS = {
-    "Person": "![Person](https://banner2.cleanpng.com/20180426/gkw/kisspng-user-computer-icons-download-person-icon-5ae1dbfbb675d7.5784016215247513557474.jpg)",  # noqa
-    "Company": "![Company](https://w7.pngwing.com/pngs/38/685/png-transparent-computer-icons-company-youtube-business-corporation-youtube-angle-building-company.png)",  # noqa
-    "LegalEntity": "![Company](https://w7.pngwing.com/pngs/38/685/png-transparent-computer-icons-company-youtube-business-corporation-youtube-angle-building-company.png)",  # noqa
+    "Person": f"![Person]({BASE_URL}/img/person.svg)",
+    "Company": f"![Company]({BASE_URL}/img/company.svg)",
+    "Airplane": f"![Airplane]({BASE_URL}/img/plane.svg)",
+    "Vessel": f"![Vessel]({BASE_URL}/img/ship.svg)",
+    "Other": f"![Other]({BASE_URL}/img/institution.svg)",
 }
 
 AUTHORITIES = {
-    "Office of Foreign Assets Control (OFAC)": "us",
-    "National Security and Defense Council": "ua",
-    "Entity List (EL) - Bureau of Industry and Security": "us",
     "European External Action Service": "eu",
-    "UK; Office of Financial Sanctions Implementation": "uk",
-    "Military End User (MEU) List - Bureau of Industry and Security": "us",
-    "Ministry of Finance": "jp",
-    "Державна служба фінансового моніторингу України (Держфінмоніторинг)": "ua",  # noqa
-    "Nonproliferation Sanctions (ISN) - State Department": "us",
     "United Nations Security Council (UN SC)": "un",
     "UN; Office of Financial Sanctions Implementation": "un",
-    "Ministry of Justice and Human Rights": "ar",
-    "Minister of Defense - Mr. Avigdor Liberman; National Bureau for Counter Terror Financing": "il",  # noqa
-    "World Bank": "xx",
-    "Asian Development Bank": "as",
-    "African Development Bank Group": "af",
-    "WBG cross debarment; Inter-American Development Bank": "sa",
-    "The State Security Cabinet (SSC); National Bureau for Counter Terror Financing": "il",  # noqa
-}
-
-COUNTRIES = {
-    "us": "USA",
-    "ua": "Ukraine",
-    # "eu": "EU",
-    "uk": "UK",
-    "jp": "Japan",
-    "ar": "Argentinien",
-    "il": "Israel",
-    "ch": "Schweiz",
+    "World Bank": "un",
 }
 
 
@@ -131,13 +110,18 @@ def clean_table(df):
             return
         return value.date()
 
-    def clean_authority(value):
+    def clean_authority(row):
+        value = row.get("authority")
         if value is None:
             return
-        iso = AUTHORITIES.get(value)
-        if iso is not None and iso in COUNTRIES:
-            cname = COUNTRIES[iso]
-            return f":{iso}: {cname} | {value}"
+        origin = row.get("origin")
+        if origin is not None:
+            return f":{origin}: {origin.upper()} | {value}"
+        origin = AUTHORITIES.get(value)
+        if origin in ("eu", "un"):
+            return (
+                f"![{origin}]({BASE_URL}/img/{origin}.svg) {origin.upper()} | {value}"
+            )
         return value
 
     def markdown_url(value):
@@ -158,8 +142,8 @@ def clean_table(df):
     )
     df_table["start"] = df_table["start"].map(clean_date)
     df_table["end"] = df_table["end"].map(clean_date)
-    df_table["icon"] = df_table["schema"].map(lambda x: ICONS.get(x))
-    df_table["authority"] = df_table["authority"].map(clean_authority)
+    df_table["icon"] = df_table["schema"].map(lambda x: ICONS.get(x, ICONS["Other"]))
+    df_table["authority"] = df_table.apply(clean_authority, axis=1)
 
     df_table = df_table[["name", "icon", "start", "end", "authority", "sourceurl"]]
 
