@@ -226,13 +226,13 @@ if __name__ == "__main__":
 
     # meta data to inject into page via js
     df["old"] = (df["start"] < "2022-02-22").map(int)
-    df["new"] = (df["start"] > "2022-02-21").map(int)
+    df["recent"] = (df["start"] > "2022-02-21").map(int)
     df["all"] = 1
 
     old_sanctions = df["old"].sum()
     old_entities = len(df[df["old"].map(bool)]["entity_id"].unique())
-    new_sanctions = df["new"].sum()
-    new_entities = len(df[df["new"].map(bool)]["entity_id"].unique())
+    new_sanctions = df["recent"].sum()
+    new_entities = len(df[df["recent"].map(bool)]["entity_id"].unique())
     all_sanctions = len(df)
     all_entities = len(df["entity_id"].unique())
 
@@ -241,15 +241,15 @@ if __name__ == "__main__":
             (old_sanctions, new_sanctions, all_sanctions),
             (old_entities, new_entities, all_entities),
         ),
-        columns=("old", "new", "all"),
+        columns=("old", "recent", "all"),
         index=("sanctions", "entities"),
     )
 
     df_meta = pd.concat(
         (
             df_meta,
-            df.groupby("origin")[["old", "new", "all"]].sum(),
-            df.groupby("schema")[["old", "new", "all"]].sum(),
+            df.groupby("origin")[["old", "recent", "all"]].sum(),
+            df.groupby("schema")[["old", "recent", "all"]].sum(),
         )
     )
 
