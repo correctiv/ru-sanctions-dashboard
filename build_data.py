@@ -96,7 +96,7 @@ def clean_data(df):
     df["active"] = df.apply(get_active, axis=1)
     df["origin"] = df["origin"].map(lambda x: x[0] if x else x)
 
-    return df
+    return df.sort_values("start", ascending=False)
 
 
 def clean_table(df):
@@ -119,9 +119,7 @@ def clean_table(df):
             return f":{origin}: {origin.upper()} | {value}"
         origin = AUTHORITIES.get(value)
         if origin in ("eu", "uno"):
-            return (
-                f"![{origin}]({BASE_URL}/img/{origin}.svg) {origin.upper()} | {value}"
-            )
+            return f"![{origin}]({BASE_URL}/img/{origin}.svg) {origin[:2].upper()} | {value}"
         return value
 
     def markdown_url(value):
