@@ -26,6 +26,7 @@ NOW = datetime.now()
 DATABASE_URI = os.getenv("FTM_STORE_URI")
 
 BASE_URL = "https://correctiv.github.io/ru-sanctions-dashboard/public"
+COR_BASE_URL = "https://correctiv.org/wp-content/uploads/2022/02"
 
 ICONS = {
     "Person": f"![Person]({BASE_URL}/img/person.svg)",
@@ -33,6 +34,14 @@ ICONS = {
     "Airplane": f"![Airplane]({BASE_URL}/img/plane.svg)",
     "Vessel": f"![Vessel]({BASE_URL}/img/ship.svg)",
     "Other": f"![Other]({BASE_URL}/img/institution.svg)",
+}
+
+ICONS_RED = {
+    "Person": f"![Person]({COR_BASE_URL}/user-red.svg)",
+    "Company": f"![Company]({COR_BASE_URL}/building-red.svg)",
+    "Airplane": f"![Airplane]({COR_BASE_URL}/plane-red.svg)",
+    "Vessel": f"![Vessel]({COR_BASE_URL}/anchor-red.svg)",
+    "Other": f"![Other]({COR_BASE_URL}/landmark-red.svg)",
 }
 
 AUTHORITIES = {
@@ -185,7 +194,7 @@ if __name__ == "__main__":
     # per schema - table with 1st row as icon header
     df_recent_schema = df_recent.copy()
     df_recent_schema["schema"] = df_recent_schema["schema"].map(
-        lambda x: x if x in ICONS else "Other"
+        lambda x: x if x in ICONS_RED else "Other"
     )
     df_recent_schema = (
         df_recent_schema.groupby("schema")
@@ -200,7 +209,7 @@ if __name__ == "__main__":
     df_recent_schema = df_recent_schema.sort_values("start")
     df_recent_schema.index = df_recent_schema.index.map(lambda x: x.date())
     df_recent_schema.loc[""] = df_recent_schema.columns.map(
-        lambda x: ICONS.get(x, ICONS["Other"])
+        lambda x: ICONS_RED.get(x, ICONS_RED["Other"])
     )
     df_recent_schema.iloc[::-1].fillna("").to_csv(
         "./src/data/recent_schema_aggregation_table.csv"
@@ -208,8 +217,10 @@ if __name__ == "__main__":
 
     # per origin - table with 1st row as flag icon header
     def get_icon(origin):
-        if origin in ("eu", "uno"):
+        if origin == "uno":
             return f"![{origin}]({BASE_URL}/img/{origin}.svg)"
+        if origin == "eu":
+            return f"![{origin}]({COR_BASE_URL}/eu-flag-crop.svg)"
         return f":{origin}:"
 
     df_recent_origin = (
