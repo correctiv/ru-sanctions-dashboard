@@ -8,6 +8,7 @@ import sys
 from datetime import datetime
 
 import pandas as pd
+from slugify import slugify
 
 # setup logger
 root = logging.getLogger()
@@ -140,6 +141,8 @@ def clean_table(df):
     df_table["program"] = df_table["program"].map(unpack)
     df_table["authority"] = df_table["authority"].map(unpack)
     df_table["name"] = df_table["name"].map(unpack)
+    # brute force transliteration
+    df_table["name"] = df_table["name"].map(lambda x: slugify(x, separator=" "))
     df_table["countries"] = df_table["countries"].map(unpack)
     df_table["reason"] = df_table["reason"].map(unpack)
     df_table["sourceurl"] = (
