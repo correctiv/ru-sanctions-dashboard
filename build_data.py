@@ -196,10 +196,11 @@ if __name__ == "__main__":
     df_recent = df[df["start"] > "2022-02-21"]
     log.info(f"Entries since 2022-02-22: `{len(df_recent)}`")
 
-    # per schema - table with 1st row as icon header
+    # per schema aggregation
+    SCHEMA = {"Person": "Person", "Company": "Unternehmen", "Other": "Sonstige Ziele"}
     df_recent_schema = df_recent.copy()
     df_recent_schema["schema"] = df_recent_schema["schema"].map(
-        lambda x: x if x in ICONS_RED else "Other"
+        lambda x: x if x in SCHEMA else "Other"
     )
     df_recent_schema = (
         df_recent_schema.groupby("schema")
@@ -207,18 +208,12 @@ if __name__ == "__main__":
         .count()
         .reset_index()
     )
-    df_recent_schema["sanction_id"] = df_recent_schema["sanction_id"].map(
-        lambda x: "" if pd.isna(x) or x < 1 else str(int(x))
-    )
     df_recent_schema = df_recent_schema.pivot("start", "schema", "sanction_id")
-    df_recent_schema = df_recent_schema.sort_values("start")
     df_recent_schema.index = df_recent_schema.index.map(lambda x: x.date())
-    df_recent_schema.loc[""] = df_recent_schema.columns.map(
-        lambda x: ICONS_RED.get(x, ICONS_RED["Other"])
-    )
-    df_recent_schema.iloc[::-1].fillna("").to_csv(
-        "./src/data/recent_schema_aggregation_table.csv"
-    )
+    df_recent_schema = df_recent_schema.sort_values("start", ascending=False)
+    df_recent_schema.fillna(0).to_csv("./src/data/recent_schema_aggregation_en.csv")
+    df_recent_schema.columns = df_recent_schema.columns.map(lambda x: SCHEMA[x])
+    df_recent_schema.fillna(0).to_csv("./src/data/recent_schema_aggregation_de.csv")
 
     # per origin - table with 1st row as flag icon header
     def get_icon(origin):
