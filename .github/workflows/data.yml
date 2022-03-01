@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   schedule:
     # https://github.com/opensanctions/opensanctions/blob/main/.github/workflows/production.yml#L5
-    - cron: "0 */6 * * *"
+    - cron: "0 2,8,14,20 * * *"
 
 jobs:
   build-data:
