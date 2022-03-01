@@ -32,7 +32,7 @@ $.getJSON(META_URL, ({ all, recent, last_updated }) => {
   inject('number11', recent.Airplane);
 
   // USA number4
-  inject('number4', recent.ch);
+  inject('number4', recent.us);
 
   // EU number5
   inject('number5', recent.eu);
