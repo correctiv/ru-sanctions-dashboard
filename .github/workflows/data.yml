@@ -36,7 +36,7 @@ jobs:
       - name: Install pip packages
         run: pip install followthemoney-store psycopg2 pandas pyicu
       - name: Download and import latest data
-        run: curl -s https://data.opensanctions.org/datasets/latest/all/entities.ftm.json | ftm store write -d opensanctions
+        run: curl -s https://data.opensanctions.org/datasets/latest/all/entities.ftm.json?`date '+%s'` | ftm store write -d opensanctions
       - name: wrangle data
         run: python3 ./build_data.py
       - name: Commit and push
