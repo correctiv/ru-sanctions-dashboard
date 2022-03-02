@@ -69,6 +69,7 @@ def load_data():
             s.entity -> 'properties' -> 'authority' as authority,
             s.entity -> 'properties' -> 'sourceUrl' as sourceUrl,
             s.entity -> 'properties' -> 'startDate' as startDate,
+            s.entity -> 'properties' -> 'listingDate' as listingDate,
             s.entity -> 'properties' -> 'endDate' as endDate,
             s.entity -> 'properties' -> 'date' as date,
             e.entity ->> 'schema' as schema,
@@ -85,6 +86,8 @@ def load_data():
 
 def clean_data(df):
     def get_start(row):
+        if row["listingdate"] is not None:
+            return min(row["listingdate"])
         if row["startdate"] is not None:
             return min(row["startdate"])
         if row["date"] is not None:
