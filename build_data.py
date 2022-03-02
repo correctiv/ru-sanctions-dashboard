@@ -212,6 +212,9 @@ if __name__ == "__main__":
         .reset_index()
     )
     df_recent_schema = df_recent_schema.pivot("start", "schema", "sanction_id")
+    df_recent_schema = df_recent_schema.applymap(
+        lambda x: None if x == 0 else x
+    ).dropna(how="all")
     df_recent_schema.index = df_recent_schema.index.map(lambda x: x.date())
     df_recent_schema = df_recent_schema.sort_values("start", ascending=False)
     df_recent_schema.fillna(0).to_csv("./src/data/recent_schema_aggregation_en.csv")
@@ -233,6 +236,9 @@ if __name__ == "__main__":
         lambda x: "" if pd.isna(x) or x < 1 else str(int(x))
     )
     df_recent_origin = df_recent_origin.pivot("start", "origin", "sanction_id")
+    df_recent_origin = df_recent_origin.applymap(
+        lambda x: None if x == 0 else x
+    ).dropna(how="all")
     df_recent_origin.index = df_recent_origin.index.map(lambda x: x.date()).map(str)
     df_recent_origin.loc[""] = df_recent_origin.columns.map(get_icon)
     df_recent_origin.iloc[::-1].fillna("").to_csv(
