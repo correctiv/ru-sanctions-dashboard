@@ -45,4 +45,13 @@ $.getJSON(META_URL, ({ all, recent, last_updated }) => {
 
   // CH number8
   inject('number8', recent.ch);
+
+  // AR number14
+  inject('number14', recent.ar);
+
+  // JP number15
+  inject('number15', recent.jp);
+
+  // AU number16
+  inject('number16', recent.au);
 });
