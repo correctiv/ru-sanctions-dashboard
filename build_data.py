@@ -145,8 +145,10 @@ def clean_table(df):
     df_table["authority"] = df_table["authority"].map(unpack)
     df_table["name"] = df_table["name"].map(unpack)
     # brute force transliteration
-    df_table["name"] = df_table["name"].map(
-        lambda x: normalize(x, latinize=True, lowercase=False)
+    df_table["name"] = (
+        df_table["name"]
+        .map(lambda x: normalize(x, latinize=True, lowercase=False))
+        .map(lambda x: " ".join(i.title() for i in x.split()))
     )
     df_table["countries"] = df_table["countries"].map(unpack)
     df_table["reason"] = df_table["reason"].map(unpack)
