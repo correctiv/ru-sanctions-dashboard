@@ -216,7 +216,7 @@ if __name__ == "__main__":
         lambda x: None if x == 0 else x
     ).dropna(how="all")
     df_recent_schema.index = df_recent_schema.index.map(lambda x: x.date())
-    df_recent_schema = df_recent_schema.sort_values("start", ascending=False)
+    df_recent_schema = df_recent_schema.sort_values("start", ascending=False).head(10)
     df_recent_schema.fillna(0).to_csv("./src/data/recent_schema_aggregation_en.csv")
     df_recent_schema.columns = df_recent_schema.columns.map(lambda x: SCHEMA[x])
     df_recent_schema.fillna(0).to_csv("./src/data/recent_schema_aggregation_de.csv")
