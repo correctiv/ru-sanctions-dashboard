@@ -131,7 +131,7 @@ def clean_table(df):
         if origin is not None:
             return f":{origin}: {origin.upper()} | {value}"
         origin = AUTHORITIES.get(value)
-        if origin in ("eu", "uno"):
+        if origin == "uno":
             return f"![{origin}]({BASE_URL}/img/{origin}.svg) {origin[:2].upper()} | {value}"
         return value
 
@@ -227,8 +227,6 @@ if __name__ == "__main__":
     def get_icon(origin):
         if origin == "uno":
             return f"![{origin}]({BASE_URL}/img/{origin}.svg)"
-        if origin == "eu":
-            return f"![{origin}]({COR_BASE_URL}/eu-flag-crop.svg)"
         return f":{origin}:"
 
     df_recent_origin = (
