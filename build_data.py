@@ -121,10 +121,10 @@ def clean_table(df):
             return
         origin = row.get("origin")
         if origin is not None:
-            return f":{origin}: {origin.upper()} | {value}"
+            return f":{origin}: {origin.upper()}"
         origin = AUTHORITIES.get(value)
         if origin == "uno":
-            return f"![{origin}]({BASE_URL}/img/{origin}.svg) {origin[:2].upper()} | {value}"
+            return f"![{origin}]({BASE_URL}/img/{origin}.svg) {origin[:2].upper()}"
         return value
 
     def markdown_url(value):
