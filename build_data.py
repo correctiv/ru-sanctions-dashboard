@@ -29,20 +29,12 @@ DATABASE_URI = os.getenv("FTM_STORE_URI")
 BASE_URL = "https://correctiv.github.io/ru-sanctions-dashboard/public"
 COR_BASE_URL = "https://correctiv.org/wp-content/uploads/2022/02"
 
-ICONS = {
-    "Person": f"![Person]({BASE_URL}/img/person.svg)",
-    "Company": f"![Company]({BASE_URL}/img/company.svg)",
-    "Airplane": f"![Airplane]({BASE_URL}/img/plane.svg)",
-    "Vessel": f"![Vessel]({BASE_URL}/img/ship.svg)",
-    "Other": f"![Other]({BASE_URL}/img/institution.svg)",
-}
-
-ICONS_RED = {
-    "Person": f"![Person]({COR_BASE_URL}/user-red.svg)",
-    "Company": f"![Company]({COR_BASE_URL}/building-red.svg)",
-    "Airplane": f"![Airplane]({COR_BASE_URL}/plane-red.svg)",
-    "Vessel": f"![Vessel]({COR_BASE_URL}/anchor-red.svg)",
-    "Other": f"![Other]({COR_BASE_URL}/landmark-red.svg)",
+CATEGORIES = {
+    "Person": "Person",
+    "Company": "Unternehmen",
+    "Airplane": "Flugzeug",
+    "Vessel": "Schiff",
+    "Other": "Sonstige",
 }
 
 AUTHORITIES = {
@@ -159,10 +151,15 @@ def clean_table(df):
     )
     df_table["start"] = df_table["start"].map(clean_date)
     df_table["end"] = df_table["end"].map(clean_date)
-    df_table["icon"] = df_table["schema"].map(lambda x: ICONS.get(x, ICONS["Other"]))
+    df_table["category_en"] = df_table["schema"].map(
+        lambda x: x if x in CATEGORIES.keys() else "Other"
+    )
+    df_table["category_de"] = df_table["category_en"].map(lambda x: CATEGORIES[x])
     df_table["authority"] = df_table.apply(clean_authority, axis=1)
 
-    df_table = df_table[["name", "icon", "start", "end", "authority", "sourceurl"]]
+    df_table = df_table[
+        ["name", "category_en", "category_de", "start", "end", "authority", "sourceurl"]
+    ]
 
     df_table = df_table.drop_duplicates()
     return df_table
