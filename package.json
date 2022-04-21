@@ -61,6 +61,6 @@
   "dependencies": {
     "@babel/polyfill": "^7.12.1",
     "core-js": "^3.22.2",
-    "prettier": "^2.5.1"
+    "prettier": "^2.6.2"
   }
 }
