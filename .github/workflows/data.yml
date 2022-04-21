@@ -29,7 +29,7 @@ jobs:
       FTM_STORE_URI: postgresql://ftm:ftm@localhost/ftm
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: actions/setup-python@v1
       - name: Install apt dependencies
         run: sudo apt-get install --yes postgresql-client curl libicu-dev
@@ -40,7 +40,7 @@ jobs:
       - name: wrangle data
         run: python3 ./build_data.py
       - name: Commit and push
-        uses: github-actions-x/commit@v2.8
+        uses: github-actions-x/commit@v2.9
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           push-branch: 'main'
