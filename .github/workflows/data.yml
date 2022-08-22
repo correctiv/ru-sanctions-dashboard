@@ -32,7 +32,9 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v1
       - name: Install apt dependencies
-        run: sudo apt-get install --yes postgresql-client curl libicu-dev
+        run: |
+          sudo apt-get update --yes
+          sudo apt-get install --yes postgresql-client curl libicu-dev
       - name: Install pip packages
         run: pip install followthemoney-store psycopg2 pandas pyicu
       - name: Download and import latest data
