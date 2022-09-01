@@ -54,7 +54,6 @@ def load_data():
         select
             s.id as sanction_id,
             e.id as entity_id,
-            s.entity ->> 'caption' as caption,
             s.entity -> 'properties' -> 'program' as program,
             s.entity -> 'properties' -> 'reason' as reason,
             s.entity -> 'properties' -> 'country' as origin,
@@ -65,7 +64,7 @@ def load_data():
             s.entity -> 'properties' -> 'endDate' as endDate,
             s.entity -> 'properties' -> 'date' as date,
             e.entity ->> 'schema' as schema,
-            e.entity -> 'properties' -> 'name' as name,
+            e.entity ->> 'caption' as name,
             e.entity -> 'properties' -> 'country' as countries
         from ftm_opensanctions s
         join ftm_opensanctions e on
@@ -135,7 +134,6 @@ def clean_table(df):
     df_table = df.copy()
     df_table["program"] = df_table["program"].map(unpack)
     df_table["authority"] = df_table["authority"].map(unpack)
-    df_table["name"] = df_table["name"].map(unpack)
     # brute force transliteration
     df_table["name"] = (
         df_table["name"]
