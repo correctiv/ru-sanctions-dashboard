@@ -46,7 +46,7 @@
     "html-webpack-plugin": "^5.5.0",
     "mini-css-extract-plugin": "^2.6.0",
     "node-sass": "^7.0.1",
-    "postcss-loader": "^6.2.1",
+    "postcss-loader": "^7.0.1",
     "postcss-preset-env": "^7.4.3",
     "sass-loader": "^12.6.0",
     "style-loader": "^3.3.1",
