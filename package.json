@@ -60,7 +60,7 @@
   },
   "dependencies": {
     "@babel/polyfill": "^7.12.1",
-    "core-js": "^3.25.0",
+    "core-js": "^3.27.1",
     "prettier": "^2.6.2"
   }
 }
