@@ -36,7 +36,7 @@ jobs:
           sudo apt-get update --yes
           sudo apt-get install --yes postgresql-client curl libicu-dev
       - name: Install pip packages
-        run: pip install SQLAlchemy<2 followthemoney-store psycopg2 pandas pyicu
+        run: pip install "SQLAlchemy<2" followthemoney-store psycopg2 pandas pyicu
       - name: Download and import latest data
         run: curl -s https://data.opensanctions.org/datasets/latest/all/entities.ftm.json?`date '+%s'` | ftm store write -d opensanctions
       - name: wrangle data
