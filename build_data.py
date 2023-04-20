@@ -228,7 +228,9 @@ if __name__ == "__main__":
     df_recent_origin = (
         df_recent.groupby("origin").resample("1D")["sanction_id"].count().reset_index()
     )
-    df_recent_origin = df_recent_origin.pivot("start", "origin", "sanction_id")
+    df_recent_origin = df_recent_origin.pivot(
+        index="start", columns="origin", values="sanction_id"
+    )
     df_recent_origin = (
         df_recent_origin.applymap(lambda x: None if x == 0 else x)
         .dropna(how="all")
