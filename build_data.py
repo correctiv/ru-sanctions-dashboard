@@ -164,7 +164,6 @@ def clean_table(df):
 
 
 if __name__ == "__main__":
-
     # load data
     df = load_data()
     df = clean_data(df)
@@ -208,7 +207,9 @@ if __name__ == "__main__":
         .count()
         .reset_index()
     )
-    df_recent_schema = df_recent_schema.pivot("start", "schema", "sanction_id")
+    df_recent_schema = df_recent_schema.pivot(
+        index="start", columns="schema", values="sanction_id"
+    )
     df_recent_schema = df_recent_schema.applymap(
         lambda x: None if x == 0 else x
     ).dropna(how="all")
